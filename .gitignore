@@ -1,0 +1,33 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+.env
+.env.*
+*.egg-info/
+build/
+dist/
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editors
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Cursor / Claude local artifacts
+.cursor/cache/
+.cursor/logs/
+.cursor/plans/*.plan.md
+!.cursor/skills/
+
+# Local scratch
+_smoketest.*
+scratch/
+tmp/
