@@ -1,4 +1,4 @@
-# anti-ai-detector-skill - jaychouya/anti-ai-detector
+# jaychouya/anti-ai-detector-skill
 
 [English](README.en.md) | [ZH](README.zh-CN.md)
 
