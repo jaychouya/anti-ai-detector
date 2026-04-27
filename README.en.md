@@ -1,6 +1,6 @@
-# anti-ai-detector - jaychouya/anti-ai-detector
+# anti-ai-detector-skill - jaychouya/anti-ai-detector
 
-[English](README.en.md) | [中文](README.zh-CN.md)
+[English](README.en.md) | [涓枃](README.zh-CN.md)
 
 `anti-ai-detector` is an open-source skill built to reduce AI-detection risk in academic writing.
 
