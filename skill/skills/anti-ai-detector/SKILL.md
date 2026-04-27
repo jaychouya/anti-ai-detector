@@ -1,5 +1,5 @@
 ---
-name: ppw-de-ai-cs
+name: anti-ai-detector
 description: Use when rewriting Chinese or English computer science / ML academic text to reduce AI-detection traces while preserving technical meaning, terminology, and experimental logic. Triggers include de-AI, 降AI, 中文降重, 中文查重, reduce AI traces, AI检测, humanize academic text, paper paragraph rewriting, reviewer-facing polish.
 version: 0.2.0
 license: MIT

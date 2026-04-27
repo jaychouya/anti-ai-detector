@@ -2,7 +2,7 @@
 """
 check_ai_traces.py
 
-Scan academic text for high-risk AI-trace phrases defined by the ppw-de-ai-cs
+Scan academic text for high-risk AI-trace phrases defined by the anti-ai-detector
 skill. Supports both English and Chinese detection profiles.
 
 Usage:
@@ -241,7 +241,7 @@ def render_text(hits: Iterable[Hit]) -> str:
 
 def main() -> int:
     parser = argparse.ArgumentParser(
-        description="Scan text for AI-trace phrases (ppw-de-ai-cs)."
+        description="Scan text for AI-trace phrases (anti-ai-detector)."
     )
     parser.add_argument("input", help="path to text file, or '-' for stdin")
     parser.add_argument(

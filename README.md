@@ -22,7 +22,7 @@ It does **not** invent facts, alter protected terminology, or replace rigorous r
 ## Repository Layout
 
 ```text
-.cursor/skills/ppw-de-ai-cs/
+skill/skills/anti-ai-detector/
 ├── SKILL.md                  # main skill definition (frontmatter + instructions)
 ├── reference.md              # stricter rewrite profile + self-check protocol
 ├── examples.md               # before/after examples for common paper sections
@@ -37,7 +37,7 @@ It does **not** invent facts, alter protected terminology, or replace rigorous r
 
 ### 1) Use as a project skill
 
-This repo already contains `.cursor/skills/ppw-de-ai-cs/`. Open the folder in Cursor and invoke the skill with prompts like:
+This repo already contains `skill/skills/anti-ai-detector/`. Open the folder in Cursor and invoke the skill with prompts like:
 
 - `降一下这段方法部分的AI率，术语保持不变`
 - `帮我做中文查重优化，保持术语不变，减少模板句`
@@ -48,16 +48,16 @@ This repo already contains `.cursor/skills/ppw-de-ai-cs/`. Open the folder in Cu
 
 ```bash
 mkdir -p ~/.cursor/skills
-cp -r .cursor/skills/ppw-de-ai-cs ~/.cursor/skills/
+cp -r skill/skills/anti-ai-detector ~/.cursor/skills/
 ```
 
 ### Option B: Project skill (this repo only)
 
-The skill is already at `.cursor/skills/ppw-de-ai-cs/`. Cursor will pick it up automatically when the workspace is opened.
+The skill is already at `skill/skills/anti-ai-detector/`. Cursor will pick it up automatically when the workspace is opened.
 
 ### Option C: Claude Code
 
-Skills under `.cursor/skills/` are also discoverable by Claude Code's `Skill` tool. No extra setup needed.
+Skills under `skill/skills/` are also discoverable by Claude Code's `Skill` tool. No extra setup needed.
 
 ---
 
@@ -78,8 +78,8 @@ The skill returns a fixed 3-part output:
 ### Optional: Static Check
 
 ```bash
-python .cursor/skills/ppw-de-ai-cs/scripts/check_ai_traces.py path/to/paper.txt
-python .cursor/skills/ppw-de-ai-cs/scripts/check_ai_traces.py path/to/chinese_draft.txt --zh
+python skill/skills/anti-ai-detector/scripts/check_ai_traces.py path/to/paper.txt
+python skill/skills/anti-ai-detector/scripts/check_ai_traces.py path/to/chinese_draft.txt --zh
 ```
 
 Output (example):
@@ -89,7 +89,7 @@ AI-trace phrases detected:
   [hype] comprehensively x1 (lines: 12)
   [filler] it is worth noting that x2 (lines: 7, 33)
   [empty_compare] outperforms existing methods x1 (lines: 41)
-Hint: see ai-trace-blacklist.md for suggested rewrites.
+Hint: see ai-trace-blacklist.md / chinese-ai-trace-blacklist.md.
 ```
 
 Exit code is `1` when issues are found, so this can be integrated into CI.
