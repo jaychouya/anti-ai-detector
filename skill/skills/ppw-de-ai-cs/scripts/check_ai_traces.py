@@ -2,12 +2,13 @@
 """
 check_ai_traces.py
 
-Scan an English academic text file for high-risk AI-trace phrases
-defined by the ppw-de-ai-cs skill.
+Scan academic text for high-risk AI-trace phrases defined by the ppw-de-ai-cs
+skill. Supports both English and Chinese detection profiles.
 
 Usage:
     python scripts/check_ai_traces.py path/to/paper.tex
     python scripts/check_ai_traces.py path/to/text.md --json
+    python scripts/check_ai_traces.py path/to/text.md --zh
     cat draft.txt | python scripts/check_ai_traces.py -
 
 Exit code:
@@ -74,6 +75,30 @@ REPEAT_CONNECTORS = [
     "hence",
 ]
 
+ZH_BLACKLIST: dict[str, list[str]] = {
+    "zh_template_opening": [
+        "随着",
+        "在当今",
+        "众所周知",
+        "值得注意的是",
+        "不难发现",
+    ],
+    "zh_template_summary": [
+        "综上所述",
+        "总体而言",
+        "由此可见",
+        "具有重要意义",
+        "提供了新的思路",
+    ],
+    "zh_hype": [
+        "显著提升",
+        "全面优化",
+        "高效且鲁棒",
+        "具有较强泛化能力",
+        "达到最优性能",
+    ],
+}
+
 
 @dataclass
 class Hit:
@@ -89,7 +114,11 @@ def load_text(source: str) -> str:
     p = Path(source)
     if not p.exists():
         raise FileNotFoundError(f"input not found: {source}")
-    return p.read_text(encoding="utf-8")
+    try:
+        return p.read_text(encoding="utf-8")
+    except UnicodeDecodeError:
+        # Common fallback for Chinese Windows environments.
+        return p.read_text(encoding="gb18030")
 
 
 def find_phrase(text: str, phrase: str) -> list[int]:
@@ -107,6 +136,26 @@ def scan_blacklist(text: str) -> list[Hit]:
     for category, phrases in BLACKLIST.items():
         for phrase in phrases:
             line_nums = find_phrase(text, phrase)
+            if line_nums:
+                hits.append(
+                    Hit(
+                        category=category,
+                        phrase=phrase,
+                        count=len(line_nums),
+                        line_examples=line_nums[:5],
+                    )
+                )
+    return hits
+
+
+def scan_zh_blacklist(text: str) -> list[Hit]:
+    hits: list[Hit] = []
+    for category, phrases in ZH_BLACKLIST.items():
+        for phrase in phrases:
+            line_nums: list[int] = []
+            for i, line in enumerate(text.splitlines(), start=1):
+                if phrase in line:
+                    line_nums.append(i)
             if line_nums:
                 hits.append(
                     Hit(
@@ -142,6 +191,37 @@ def scan_repeat_connectors(text: str) -> list[Hit]:
     return hits
 
 
+def scan_zh_repeated_ngrams(
+    text: str, ngram_size: int = 4, min_repeat: int = 3, top_n: int = 8
+) -> list[Hit]:
+    """
+    Scan repeated Chinese n-grams to surface template-like local repetition.
+    """
+    merged = re.sub(r"\s+", "", text)
+    grams: dict[str, int] = {}
+    for i in range(0, max(0, len(merged) - ngram_size + 1)):
+        gram = merged[i : i + ngram_size]
+        if not re.search(r"[\u4e00-\u9fff]", gram):
+            continue
+        grams[gram] = grams.get(gram, 0) + 1
+
+    repeated = sorted(
+        ((gram, c) for gram, c in grams.items() if c >= min_repeat),
+        key=lambda item: item[1],
+        reverse=True,
+    )[:top_n]
+
+    return [
+        Hit(
+            category="zh_repeated_ngram",
+            phrase=gram,
+            count=count,
+            line_examples=[],
+        )
+        for gram, count in repeated
+    ]
+
+
 def render_text(hits: Iterable[Hit]) -> str:
     hits = list(hits)
     if not hits:
@@ -155,7 +235,7 @@ def render_text(hits: Iterable[Hit]) -> str:
         )
         out.append(f"  [{h.category}] {h.phrase} x{h.count}{loc}")
     out.append("")
-    out.append("Hint: see ai-trace-blacklist.md for suggested rewrites.")
+    out.append("Hint: see ai-trace-blacklist.md / chinese-ai-trace-blacklist.md.")
     return "\n".join(out)
 
 
@@ -167,10 +247,32 @@ def main() -> int:
     parser.add_argument(
         "--json", action="store_true", help="emit JSON report instead of text"
     )
+    parser.add_argument(
+        "--zh",
+        action="store_true",
+        help="enable Chinese profile (blacklist + repeated n-gram hints)",
+    )
+    parser.add_argument(
+        "--ngram-size",
+        type=int,
+        default=4,
+        help="ngram size for Chinese repetition scan (default: 4)",
+    )
+    parser.add_argument(
+        "--min-repeat",
+        type=int,
+        default=3,
+        help="minimum repeat count for Chinese n-gram alert (default: 3)",
+    )
     args = parser.parse_args()
 
     text = load_text(args.input)
     hits = scan_blacklist(text) + scan_repeat_connectors(text)
+    if args.zh:
+        hits += scan_zh_blacklist(text)
+        hits += scan_zh_repeated_ngrams(
+            text, ngram_size=args.ngram_size, min_repeat=args.min_repeat
+        )
 
     if args.json:
         print(json.dumps([asdict(h) for h in hits], ensure_ascii=False, indent=2))

@@ -13,6 +13,7 @@
 - Applies strict anti-template constraints from `reference.md`.
 - Provides section-level examples in `examples.md`.
 - Includes a static checker script for high-risk AI-trace phrases.
+- Includes a Chinese profile (`--zh`) for 中文查重高风险短语和重复 n-gram 提示.
 
 It does **not** invent facts, alter protected terminology, or replace rigorous reasoning with generic wording.
 
@@ -39,6 +40,7 @@ It does **not** invent facts, alter protected terminology, or replace rigorous r
 This repo already contains `.cursor/skills/ppw-de-ai-cs/`. Open the folder in Cursor and invoke the skill with prompts like:
 
 - `降一下这段方法部分的AI率，术语保持不变`
+- `帮我做中文查重优化，保持术语不变，减少模板句`
 - `Rewrite this paragraph to sound less AI-generated`
 - `Use strict profile and show Chinese structure notes`
 
@@ -77,6 +79,7 @@ The skill returns a fixed 3-part output:
 
 ```bash
 python .cursor/skills/ppw-de-ai-cs/scripts/check_ai_traces.py path/to/paper.txt
+python .cursor/skills/ppw-de-ai-cs/scripts/check_ai_traces.py path/to/chinese_draft.txt --zh
 ```
 
 Output (example):
@@ -99,6 +102,7 @@ Exit code is `1` when issues are found, so this can be integrated into CI.
 - `reference.md`: strict rewrite profile and self-check checklist
 - `examples.md`: before/after examples by paper section
 - `ai-trace-blacklist.md`: phrase blacklist + replacement hints
+- `chinese-ai-trace-blacklist.md`: 中文高风险表达词表（查重/降重）
 - `scripts/check_ai_traces.py`: static checker
 
 ---

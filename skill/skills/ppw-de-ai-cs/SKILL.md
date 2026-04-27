@@ -1,6 +1,6 @@
 ---
 name: ppw-de-ai-cs
-description: Use when rewriting English computer science / ML academic text to reduce AI-detection traces while preserving technical meaning, terminology, and experimental logic. Triggers include de-AI, 降AI, reduce AI traces, AI检测, humanize academic text, paper paragraph rewriting, reviewer-facing polish.
+description: Use when rewriting Chinese or English computer science / ML academic text to reduce AI-detection traces while preserving technical meaning, terminology, and experimental logic. Triggers include de-AI, 降AI, 中文降重, 中文查重, reduce AI traces, AI检测, humanize academic text, paper paragraph rewriting, reviewer-facing polish.
 version: 0.2.0
 license: MIT
 ---
@@ -11,7 +11,7 @@ license: MIT
 
 This skill rewrites academic paragraphs so they read like domain-expert human writing rather than template-like AI output. It keeps the original technical depth and argument chain intact while increasing lexical variation and sentence-level rhythm changes.
 
-The skill is targeted at computer science, software engineering, and machine learning prose. It can be applied to abstract, method, experiment, results, discussion, related-work, and limitations sections.
+The skill is targeted at computer science, software engineering, and machine learning prose in both Chinese and English. It can be applied to abstract, method, experiment, results, discussion, related-work, and limitations sections.
 
 ## When to Use
 
@@ -21,6 +21,7 @@ Use this skill when:
 - The text is in computer science, software engineering, or machine learning.
 - The user requests higher perplexity and burstiness without changing core meaning.
 - The user explicitly asks for AI-trace reduction before submission or reviewer response.
+- The user asks for 中文查重优化、中文降重、或中文社区可读性优化.
 
 Do not use this skill when:
 
@@ -99,6 +100,12 @@ Always return three sections in this order:
 3. **结构调整说明（中文）**  
    3-6 bullet points explaining what structural changes were made.
 
+For Chinese-first workflows, keep the same 3-part structure but adapt section names to:
+
+1. **核心论点（简要）**
+2. **重写版本**
+3. **结构调整说明（中文）**
+
 ## Common Failure Modes
 
 - Replacing protected terminology with near-synonyms.
@@ -137,6 +144,7 @@ For repeated polishing, you can run a static check on the rewritten text:
 
 ```bash
 python scripts/check_ai_traces.py path/to/paper.txt
+python scripts/check_ai_traces.py path/to/paper.txt --zh
 ```
 
 The script flags blacklist phrases and repeated transition starters. Treat its output as hints, not as ground truth; final judgement stays with the author.
@@ -146,4 +154,5 @@ The script flags blacklist phrases and repeated transition starters. Treat its o
 - Stricter rewriting profile and self-check: [reference.md](reference.md)
 - Section-by-section rewrite examples (method / experiment / discussion / abstract / related work / limitations): [examples.md](examples.md)
 - Full AI-trace phrase blacklist and suggested replacements: [ai-trace-blacklist.md](ai-trace-blacklist.md)
+- Chinese high-risk phrasing and rewrite hints: [chinese-ai-trace-blacklist.md](chinese-ai-trace-blacklist.md)
 - Static checker script: [scripts/check_ai_traces.py](scripts/check_ai_traces.py)
